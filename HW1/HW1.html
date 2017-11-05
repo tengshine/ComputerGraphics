@@ -1,0 +1,175 @@
+
+<!DOCTYPE html>
+
+<html>
+
+<head>
+<style>
+#info {
+  position: absolute;
+  top: 0px;
+  width: 100%;
+  padding: 5px;
+  text-align: center;
+  color: #ffff00
+}
+
+body {
+  background-color: #fff;
+  color: #111;
+  margin: 0px;
+  overflow: hidden;
+  font-family: Monospace;
+  font-size: 20px;
+}
+
+</style>
+</head>
+
+<body>
+<div id="info">
+<t>Homework 1</t><br><br>
+<button id='toggleTurn'>toggle</button>
+<button id='turnStyle'>Quartz</button><br>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r78/three.min.js"></script>
+<script src="https://threejs.org/examples/js/controls/OrbitControls.js"></script>
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<script>
+var camera, scene, renderer;
+var secondHand= new THREE.Object3D();
+var turn=false;
+var angle=0,angleNow=0,startTime;
+var clock = new THREE.Clock();
+init();
+animate();
+$('#toggleTurn').click(function(){
+  turn = !turn;
+  if (turn) {
+    startTime = clock.getElapsedTime();
+
+  }
+  else
+
+    angleNow = angle;
+});
+$('#turnStyle').click(function(){
+  if($("#turnStyle").text()=="Analog"){
+    $("#turnStyle").text("Quartz");
+
+  }
+  else if($("#turnStyle").text()=="Quartz"){
+    $("#turnStyle").text("Sector");
+  }
+  else if($("#turnStyle").text()=="Sector"){
+    $("#turnStyle").text("Analog");
+  }
+});
+
+
+function init() {
+	var width = window.innerWidth;
+	var height = window.innerHeight;
+
+	renderer = new THREE.WebGLRenderer({
+	});
+	renderer.setSize(width, height);
+	renderer.setClearColor(0x888888);
+
+	document.body.appendChild(renderer.domElement);
+
+	scene = new THREE.Scene();
+	camera = new THREE.PerspectiveCamera(500, window.innerWidth / window.innerHeight, 1, 1000);
+	camera.position.z = 13;
+	scene.add(camera);
+	//window.addEventListener('resize', onWindowResize, false);
+
+  var circle = new THREE.Mesh( new THREE.CircleGeometry( 15, 32 ), new THREE.MeshBasicMaterial( { color: 0xffffff }) );
+  scene.add( circle );
+
+  var geometry = new THREE.CircleGeometry(14, 25, 32);
+
+  var material = new THREE.MeshBasicMaterial({
+    color: 0x001234,
+    side: THREE.DoubleSide
+  });
+  mesh = new THREE.Mesh(geometry, material);
+  scene.add(mesh);
+
+
+  var cube1 = new THREE.Mesh( new THREE.BoxGeometry( 1, 3, 0 ), new THREE.MeshBasicMaterial( {color: 0x000000} ) );
+  cube1.position.set(0,15,0);
+  scene.add( cube1 );
+
+  var cube = new THREE.Mesh( new THREE.BoxGeometry( 12, 1.5, 0 ), new THREE.MeshBasicMaterial( {color: 0xeeeeee} ) );
+  cube.position.set(6,0,0);
+  secondHand.add( cube );
+
+  var cone = new THREE.Mesh( new THREE.ConeGeometry( 1.5, 3, 32 ), new THREE.MeshBasicMaterial( {color: 0xeeeeee}) );
+  cone.rotation.z=-Math.PI/2;
+  cone.position.set(12,0,0);
+  secondHand.add( cone );
+
+  scene.add( secondHand );
+  secondHand.rotation.z=Math.PI/2;
+}
+
+
+
+function onWindowResize() {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+}
+
+
+
+function animate() {
+
+  if (turn) {
+    var move = clock.getElapsedTime() - startTime;
+    console.log(move);
+
+    if($("#turnStyle").text()=="Quartz"){ //A
+      secondHand.visible = true;
+      move=move*2*Math.PI/60;
+      angle = angleNow + move;
+      angle %= Math.PI*2;
+      secondHand.rotation.z=Math.PI/2-angle;
+      mesh.geometry= new THREE.CircleGeometry (14,32);
+    }
+
+    if($("#turnStyle").text()=="Analog"){ //S
+      secondHand.visible = false;
+      move=move*2*Math.PI/60;
+      angle = angleNow + move;
+      angle %= Math.PI*2;
+      mesh.rotation.y=Math.PI;
+      mesh.geometry= new THREE.CircleGeometry (14,32, Math.PI/2, angle);
+
+    }
+
+    if($("#turnStyle").text()=="Sector"){ //Q
+      secondHand.visible = true;
+      move=move*2*Math.PI/60;
+      angle = angleNow + move;
+      angle %= Math.PI*2;
+      mesh.geometry= new THREE.CircleGeometry (14,32);
+      secondHand.rotation.z=Math.PI/2-Math.ceil(angle*10)/10;
+    }
+
+  }
+	requestAnimationFrame(animate);
+	render();
+}
+
+function render() {
+	renderer.render(scene, camera);
+}
+
+</script>
+</body>
+
+</html>
