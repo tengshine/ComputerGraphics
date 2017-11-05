@@ -30,8 +30,8 @@ body {
 <div id="info">
 <t>Homework 1</t><br><br>
 <button id='toggleTurn'>toggle</button>
-<button id='turnStyle'>Quartz</button><br>
-
+<button id='turnStyle'>Quartz</button>
+<button id='restart'>Restart</button><br>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r78/three.min.js"></script>
@@ -67,7 +67,17 @@ $('#turnStyle').click(function(){
     $("#turnStyle").text("Analog");
   }
 });
+$('#restart').click(function(){
 
+	secondHand.rotation.z=Math.PI/2;
+	angle=0;
+	angleNow = angle;
+	if($("#turnStyle").text()=="Analog"){
+		mesh.geometry= new THREE.CircleGeometry (14,32, Math.PI/2, angle);
+	}
+	else mesh.geometry= new THREE.CircleGeometry (14,32);
+	
+});
 
 function init() {
 	var width = window.innerWidth;
