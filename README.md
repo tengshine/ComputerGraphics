@@ -1,4 +1,4 @@
-# ComputerGraphics
+# Computer Graphics
 
 **Homework 1 ： [HW1](https://tengshine.github.io/ComputerGraphics/HW1/HW1)**
 
