@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -16,10 +17,13 @@ body {
 </style>
 </head>
 <body>
-<div style="position:absolute;top:20px;width:100%;background:pink;text-align:center">
-test
-<button id='mybutton'>Press</button>
-</div>
+<div id="info">
+<div id="info">
+<t>Homework 3</t><br>
+<p>Q、A、S、W 控制方向，U 前進，D 後退</p>
+<p>空白鍵發射</p>
+<button id='change'>change</button>
+</div><br>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/84/three.min.js">
 </script>
@@ -39,9 +43,23 @@ var turret,turn;
 var tank;
 var turnOut=false;
 var stopped=true;
+var changeturn=false;
 init();
 animate();
 
+$('#change').click(function(){
+	changeturn=!changeturn;
+	if(changeturn){
+		camera.position.set(-30,40,0);
+		camera.lookAt(turret.localToWorld(new THREE.Vector3(50,0,0)));
+	
+	}
+	else {
+		camera.position.set (0,0,200);
+		camera.lookAt(new Vector3(0,0,0));
+	
+	}
+});
 function buildParts() {
     var parts = [];
 
@@ -151,7 +169,7 @@ function init() {
 
 function start (vv) {
   stopped = false;
-	
+
   vel.set (-vv.x, 0 ,-vv.z).normalize().multiplyScalar(200);
 }
 
@@ -170,7 +188,7 @@ function update(dt) {
 
 function animate() {
 
-  controls.update();
+  //controls.update();
   keyboard.update();
   scene.updateMatrixWorld();
   ballMesh.updateMatrixWorld();
@@ -196,11 +214,16 @@ function animate() {
   else if (keyboard.pressed ("S")) {
     if(theta2>-0.5)theta2 -= 0.01;
   }
-  if(keyboard.pressed ("up")){
+  if(keyboard.pressed ("U")){
     tank.position.x+=0.1;
+	camera.position.x+=0.1;
   }
-  if(keyboard.pressed ("down")){
+  if(keyboard.pressed ("D")){
     tank.position.x-=0.1;
+	camera.position.x-=0.1;
+  }
+  if(keyboard.pressed ("C")){
+    
   }
 
   if (stopped) {
