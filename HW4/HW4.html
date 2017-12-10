@@ -21,7 +21,7 @@ body {
 
 <body> 
 <div id="info">
-	<br>HW3<br>
+	<br>HW4<br>
 	方向鍵控制<br>
 	
 	空白鍵煞車<br>
@@ -48,9 +48,36 @@ var mass = 1;
 var clock = new THREE.Clock();
 var angle=0,theta=0;
 var box = new THREE.Object3D();
-
+var cameraMap;
 init();
 animate();
+
+function initHUD() {
+  // sceneHUD: a simple line boundary
+  sceneHUD = new THREE.Scene();
+  cameraHUD = new THREE.OrthographicCamera(-10.5, 10.5, 10.5, -10.5, -10, 10);
+  //cameraHUD.position.z = 5;
+  
+  
+  //cameraHUD.position.set(box.position.x,30,box.position.z);
+  
+  
+  sceneHUD.add(cameraHUD);
+
+  var lineGeometry = new THREE.Geometry();
+  lineGeometry.vertices.push(new THREE.Vector3(-10, -10, 0),
+    new THREE.Vector3(10, -10, 0),
+    new THREE.Vector3(10, 10, 0),
+    new THREE.Vector3(-10, 10, 0),
+    new THREE.Vector3(-10, -10, 0));
+  var line = new THREE.Line(lineGeometry,
+    new THREE.LineBasicMaterial({
+      color: 0xffffff
+    }));
+  sceneHUD.add(line);
+  
+  // depth test for line??
+}
 
 function init() {
 	var width = window.innerWidth;
@@ -126,6 +153,23 @@ function init() {
 	pos = new THREE.Vector3();
 	vel = new THREE.Vector3();
 	force = new THREE.Vector3();
+	
+	var geometry = new THREE.CylinderGeometry( 20, 20, 8, 32 );
+	var material = new THREE.MeshNormalMaterial();
+	var cylinder = new THREE.Mesh( geometry, material );
+	cylinder.position.set(40,4,0);
+	scene.add( cylinder );
+	
+	
+	
+	initHUD();
+	renderer.autoClear = false;
+
+
+ 
+	cameraMap = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 1, 10000);
+	//take a while to find a good view
+	
 }
 function unitize (object, targetSize) {  
 	
@@ -197,7 +241,23 @@ function animate() {
 		box.rotation.y = angle-Math.PI/2 ;
 		
 	}
+	cameraMap.position.set (box.position.x, 30, box.position.z);
+	//cameraMap.lookAt (new THREE.Vector3(,0,0));
+	///////障礙物
+	<!-- var a1=(box.position.x+10*(angle-Math.PI/2)-40)*(box.position.x+10*(angle-Math.PI/2)-40)+(box.position.z+5*(angle-Math.PI/2))*(box.position.z+5*(angle-Math.PI/2)); -->
+	<!-- var a2=(box.position.x-10*(angle-Math.PI/2)-40)*(box.position.x-10*(angle-Math.PI/2)-40)+(box.position.z+5*(angle-Math.PI/2))*(box.position.z+5*(angle-Math.PI/2)); -->
+	<!-- var a3=(box.position.x+10*(angle-Math.PI/2)-40)*(box.position.x+10*(angle-Math.PI/2)-40)+(box.position.z-5*(angle-Math.PI/2))*(box.position.z-5*(angle-Math.PI/2)); -->
+	<!-- var a4=(box.position.x-10*(angle-Math.PI/2)-40)*(box.position.x-10*(angle-Math.PI/2)-40)+(box.position.z-5*(angle-Math.PI/2))*(box.position.z-5*(angle-Math.PI/2)); -->
 	
+	<!-- if(a1<=400 || a2<=400 || a3<=400 || a4<=400){ -->
+		
+		<!-- power = 0.01; -->
+		
+		<!-- console.log("t"); -->
+		
+	
+	<!-- } -->
+	<!-- else console.log("f"); -->
 	requestAnimationFrame(animate);
 	render();
 	
@@ -215,23 +275,45 @@ function update(){
 	controls.update();
 	keyboard.update();
 	if (keyboard.down("space")) {
-		power = 0;
+		power = 0.01;
 	}	
 	if ( keyboard.pressed("left") ) 
 		theta =0.31;               
 	if ( keyboard.pressed("right") )
 		theta =-0.31;               
 	if ( keyboard.pressed("up") )  
-		power += 0.1;        
+		power += 0.05;        
 	if ( keyboard.pressed("down") )  
-		power -= 0.1;
+		power -= 0.05;
 		if(power<0)power=0;
-	power = myclamp (power, 0.0, 20.0);		
+	power = myclamp (power, 0.0, 15.0);		
 }
 
 function render() {
 
+  var WW = window.innerWidth;
+  var HH = window.innerHeight;
+
+  renderer.setScissorTest(true);
+
+  renderer.setViewport(0, 0, WW, HH);
+  camera.aspect = WW / HH;
+  camera.updateProjectionMatrix();
+  
+  renderer.setScissor(0, 0, WW, HH);
+  renderer.clear();
   renderer.render(scene, camera);
+  //renderer.render(sceneHUD, cameraHUD);
+
+  renderer.setViewport(WW / 1.5, HH / 1.5, WW / 4, HH / 3.5);
+  renderer.setScissor(WW / 1.5, HH / 1.5, WW / 4, HH / 3.5);
+  // no need to set aspect (since it is still ONE)
+  renderer.clear();  // important!
+  renderer.render(sceneHUD, cameraHUD);
+  renderer.render(scene, cameraMap);
+
+
+  renderer.setScissorTest(false);
 
 }
 </script>
