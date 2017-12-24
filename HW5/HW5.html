@@ -36,8 +36,8 @@
 
 <body> 
 	<div id="info">
-	  <a href="http://threejs.org" target="_blank">three.js</a> - OBJLoader + MTLLoader
-		<br> Scale-and-Place
+	  HW5
+		<br>
 	</div>
 
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/84/three.min.js"></script>
@@ -155,8 +155,48 @@ function init() {
 	var onError = function(xhr) {};
 
   //THREE.Loader.Handlers.add(/\.dds$/i, new THREE.DDSLoader());
+  
+  
+	renderer = new THREE.WebGLRenderer();
+	renderer.setPixelRatio(window.devicePixelRatio);
+	renderer.setSize(window.innerWidth, window.innerHeight);
+	container.appendChild(renderer.domElement);
+	renderer.setClearColor (0x888888);
+
+	controls = new THREE.OrbitControls(camera, renderer.domElement);
+	camera.position.z = 200;
+
+	window.addEventListener('resize', onWindowResize, false);
+	
+
+	
+	
+	renderer.shadowMap.enabled = true;
+	renderer.shadowMap.type = THREE.PCFShadowMap;
+  ////////////////////////////////////
+	lampLight.castShadow = true;
+	lampLight.shadow.mapSize.width = 1024;
+	lampLight.shadow.mapSize.height = 1024;
+	lampLight.shadow.camera.near = 50;
+	lampLight.shadow.camera.far = 4000;
+	lampLight.shadow.camera.fov = lampLight.angle / Math.PI * 180;
+
+	//scene.add( new THREE.CameraHelper( lampLight.shadow.camera ) );
+
+	console.log(lampLight.angle);
+
+	
+  
+  
+  
+  
+  
+  
+  
+  
+  
 	///////////////桌子
-	var geometry = new THREE.BoxGeometry( 10, 10, 10 );
+	var geometry = new THREE.BoxGeometry( 10, 10, 10,100,100,100 );
 	var material = new THREE.MeshBasicMaterial( {color: 0x00ff00} );
 	var cube = new THREE.Mesh( geometry, material );
 
@@ -186,6 +226,8 @@ function init() {
 				function(mesh) {
 					if (mesh instanceof THREE.Mesh) {
 					mesh.material.side = THREE.DoubleSide;
+					mesh.castShadow = true;
+					mesh.receiveShadow = true;
 				}
 			});
 
@@ -225,6 +267,8 @@ function init() {
 				function(mesh) {
 					if (mesh instanceof THREE.Mesh) {
 					mesh.material.side = THREE.DoubleSide;
+					mesh.castShadow = true;
+					mesh.receiveShadow = true;
 				}
 			});
 
@@ -263,6 +307,8 @@ function init() {
 				function(mesh) {
 					if (mesh instanceof THREE.Mesh) {
 					mesh.material.side = THREE.DoubleSide;
+					mesh.castShadow = true;
+					mesh.receiveShadow = true;
 				}
 			});
 
@@ -271,24 +317,24 @@ function init() {
 
 	});
 	///////////////筆1
-	/*var geometry = new THREE.BoxGeometry( 10, 10, 10 );
+	var geometry = new THREE.BoxGeometry( 10, 10, 10 );
 	var material = new THREE.MeshBasicMaterial( {color: 0x00ff00} );
 	var cube3 = new THREE.Mesh( geometry, material );
 	
 	var mtlLoader = new THREE.MTLLoader();
-	mtlLoader.setPath('pen02-obj/');
-	mtlLoader.load('Pen_01.mtl', function(materials) {
+	mtlLoader.setPath('pen-obj/');
+	mtlLoader.load('pen.mtl', function(materials) {
 
 		materials.preload();
 
 		var objLoader = new THREE.OBJLoader();
 		objLoader.setMaterials(materials);
-		objLoader.setPath('pen02-obj/');
-		objLoader.load('Pen_01.obj', function(object) {
+		objLoader.setPath('pen-obj/');
+		objLoader.load('pen.obj', function(object) {
 
 			var theObject3 =  unitize (object, 10);
-			theObject3.position.set(-25,63,-10);
-			theObject3.rotation.y = 3*Math.PI/4;
+			theObject3.position.set(9,43.3,3);
+			theObject3.rotation.y = Math.PI/4;
 			tableMash.add(theObject3);
 			//tableMash.rotation.y = Math.PI/6;
 			cube3.add(tableMash);
@@ -298,13 +344,16 @@ function init() {
 				function(mesh) {
 					if (mesh instanceof THREE.Mesh) {
 					mesh.material.side = THREE.DoubleSide;
+					mesh.castShadow = true;
+					mesh.receiveShadow = true;
+
 				}
 			});
 
 
 		}, onProgress, onError);
 
-	});*/
+	});
 	
 	////////////////遙控器
 	
@@ -312,14 +361,11 @@ function init() {
 	remote1.position.set(10,44,10);
 	scene.add(remote1);
 	
-	var remote2 = new THREE.Mesh( new THREE.BoxGeometry( 0.5, 0.5, 1), new THREE.MeshLambertMaterial( {color: 0xff2222} ) );
-	remote2.position.set(7,45,10);
-	//scene.add(remote2);
-	
-	var remote3 = new THREE.Mesh( new THREE.BoxGeometry( 0.5, 0.5, 1 ), new THREE.MeshLambertMaterial( {color: 0x2222ff} ) );
-	remote3.position.set(9,45,10);
 	//scene.add(remote3);
-	
+	<!-- var floor = new THREE.Mesh(new THREE.PlaneGeometry(400, 400, 130, 130), -->
+	<!-- new THREE.MeshLambertMaterial()); -->
+	<!-- floor.rotation.x = -Math.PI / 2; -->
+	<!-- scene.add(floor); -->
 	////////////////////////////////////////////////////////////
 	
 	button = new Button(new THREE.Color (0xff2222), 'lightControl');
@@ -333,16 +379,7 @@ function init() {
 	pickables.push(button2.obj);
 	
 	
-	renderer = new THREE.WebGLRenderer();
-	renderer.setPixelRatio(window.devicePixelRatio);
-	renderer.setSize(window.innerWidth, window.innerHeight);
-	container.appendChild(renderer.domElement);
-	renderer.setClearColor (0x888888);
-
-	controls = new THREE.OrbitControls(camera, renderer.domElement);
-	camera.position.z = 200;
-
-	window.addEventListener('resize', onWindowResize, false);
+	
 
 }
 
